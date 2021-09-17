@@ -31,6 +31,6 @@ class DynamoAccessor:
 
 def lambda_handler(event, context):
     dynamo_backend = DynamoAccessor(DYNAMO_BD)
-    db_element = dynamo_backend.put_transaction("+5000")
+    db_element = dynamo_backend.put_transaction(event['transaction'])
     return db_element
 
