@@ -9,11 +9,11 @@ class DynamoAccessor:
         dynamo_db = boto3.resource('dynamodb')
         self.table = dynamo_db.Table(dynamo_table)
 
-    def get_data_from_dynamo(self, uuid):
-        response = self.table.query(KeyConditionExpression=Key('uuid').eq(uuid))
+    def get_data_from_dynamo(self, cc):
+        response = self.table.query(KeyConditionExpression=Key('cc').eq(cc))
         return response["Items"][0] if any(response["Items"]) else None
 
 def lambda_handler(event, context):
     dynamo_backend = DynamoAccessor(DYNAMO_BD)
-    db_element = dynamo_backend.get_data_from_dynamo(event['uuid'])
+    db_element = dynamo_backend.get_data_from_dynamo(event['cc'])
     return db_element
