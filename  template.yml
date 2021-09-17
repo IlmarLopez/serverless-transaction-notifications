@@ -32,8 +32,3 @@ Resources:
             Action:
               - sts:AssumeRole
       Path: /
-Outputs:
-  LambdaFunction:
-    Value: !GetAtt LambdaFunction
-    Export:
-      Name: LambdaFunction
