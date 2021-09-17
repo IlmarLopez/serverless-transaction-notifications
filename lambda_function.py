@@ -7,8 +7,6 @@ import json
 
 DYNAMO_BD = os.environ['DYNAMO_BD']
 
-# Lore, aleja, walter, andres, geny, juand, juan, hernan, lucy, julian y toooooodos
-
 class DynamoAccessor:
     def __init__(self, dynamo_table):
         dynamo_db = boto3.resource('dynamodb')
@@ -40,9 +38,13 @@ def lambda_handler(event, context):
         obj = s3.get_object(Bucket=bucket, Key=file_key_name)
 
         rows = obj['Body'].read().split(b'\n')
+        # total_balance = 0.0
+        # average_credit_amount = 0.0
+        # average_debit_amount = 0.0
 
-        for r in rows:
-            print(r.decode())
+        for r in enumerate(rows, start=1):
+            amount = r.decode()['transaction']
+            print(amount)
             # email_content = email_content + '\n' + r.decode()
 
         # Parse and print the transactions
