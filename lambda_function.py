@@ -19,10 +19,10 @@ class DynamoAccessor:
 
     def put_transaction(self, transaction):
         now = datetime.now()
-        id = uuid.uuid1()
+        id = uuid.uuid4()
         response = self.table.put_item(
         Item={
-                'id': id,
+                'id': str(id),
                 'date': now,
                 'transaction': transaction
             }
