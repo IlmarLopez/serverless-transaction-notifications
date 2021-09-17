@@ -32,7 +32,7 @@ def lambda_handler(event, context):
     s3 = boto3.client('s3')
 
     # Get the bucket name
-    bucket = event['Records'][0]['s3']['bucket']['name']
+    bucket = event['Records'][0]['s3']['bucket']['storitransactionsbucket']
     # Get the file from s3
     key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
 
