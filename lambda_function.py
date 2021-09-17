@@ -4,7 +4,6 @@ from boto3.dynamodb.conditions import Key
 import time
 import uuid
 import json
-import urllib.parse
 
 DYNAMO_BD = os.environ['DYNAMO_BD']
 
@@ -32,19 +31,19 @@ def lambda_handler(event, context):
     s3 = boto3.client('s3')
 
     # Get the bucket name
-    bucket = event['Records'][0]['s3']['bucket']['storitransactionsbucket']
+    bucket = event['Records'][0]['s3']['bucket']['name']
     # Get the file from s3
-    key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
+    file_key_name = event['Records'][0]['s3']['object']['key']
 
     try:
         # Fecth the file from S3
-        response = s3.get_object(Bucket=bucket, key=key)
+        obj = s3.get_object(Bucket=bucket, Key=file_key_name)
 
-        text = response["Body"].read().decode()
-        data = json.loads(text)
+        rows = obj['Body'].read().split(b'\n')
 
-        # Print the content
-        print(data)
+        for r in rows:
+            print(r.decode())
+            # email_content = email_content + '\n' + r.decode()
 
         # Parse and print the transactions
         # transactions = data['transactions']
