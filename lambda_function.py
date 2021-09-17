@@ -1,7 +1,7 @@
 import boto3
 import os
 from boto3.dynamodb.conditions import Key
-from datetime import datetime
+import time
 import uuid
 
 DYNAMO_BD = os.environ['DYNAMO_BD']
@@ -18,12 +18,12 @@ class DynamoAccessor:
         return response["Items"][0] if any(response["Items"]) else None
 
     def put_transaction(self, transaction):
-        now = datetime.now()
+        ts = time.time()
         id = uuid.uuid4()
         response = self.table.put_item(
         Item={
                 'id': str(id),
-                'date': now,
+                'date': str(ts),
                 'transaction': transaction
             }
         )
