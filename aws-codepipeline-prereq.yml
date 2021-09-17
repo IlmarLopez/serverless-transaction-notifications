@@ -164,8 +164,7 @@ Resources:
                   - lambda:ListFunctions
                   - s3:*
                   - iam:PassRole
-                  - cloudformation:DescribeStacks
-                  - cloudformation:DescribeChangeSet
+                  - cloudformation:*
                 Resource: "*"
               - Effect: Allow
                 Action:
