@@ -4,6 +4,8 @@ from boto3.dynamodb.conditions import Key
 
 DYNAMO_BD = os.environ['DYNAMO_BD']
 
+# Lore, aleja, walter, andres, geny, juand, juan, hernan, lucy, julian y toooooodos
+
 class DynamoAccessor:
     def __init__(self, dynamo_table):
         dynamo_db = boto3.resource('dynamodb')
@@ -17,3 +19,4 @@ def lambda_handler(event, context):
     dynamo_backend = DynamoAccessor(DYNAMO_BD)
     db_element = dynamo_backend.get_data_from_dynamo(event['cc'])
     return db_element
+

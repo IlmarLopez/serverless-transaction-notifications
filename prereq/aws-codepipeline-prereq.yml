@@ -331,4 +331,4 @@ Outputs:
   LambdaPolicyS3:
     Value: !Ref LambdaPolicyS3
     Export:
-        Name: LambdaPolicyS3     
+        Name: LambdaPolicyS3        
