@@ -5,6 +5,7 @@ import time
 import uuid
 from datetime import datetime
 import calendar
+import email
 
 DYNAMO_BD = os.environ['DYNAMO_BD']
 
