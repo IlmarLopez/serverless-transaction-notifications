@@ -25,12 +25,12 @@ class DynamoAccessor:
         return response
 
 def lambda_handler(event, context):
-    # Get the bucket name
-    bucket = event['Records'][0]['s3']['bucket']['name']
-    # Get the file from s3
-    file_key_name = event['Records'][0]['s3']['object']['key']
-
     try:
+        # Get the bucket name
+        bucket = event['Records'][0]['s3']['bucket']['name']
+        # Get the file from s3
+        file_key_name = event['Records'][0]['s3']['object']['key']
+
         s3 = boto3.client('s3')
         # dynamo_backend = DynamoAccessor(DYNAMO_BD)
 
@@ -61,11 +61,9 @@ def lambda_handler(event, context):
         print("Total balance ", total_balance)
         print("Average debit amount ", average_debit_amount)
         print("Average credit amount ", average_credit_amount)
-        
+
         # db_element = dynamo_backend.put_transaction()
         
-        # average_credit_amount = 0.0
-        # average_debit_amount = 0.0
         return 'Success!'
     except Exception as e:
         print(e)
