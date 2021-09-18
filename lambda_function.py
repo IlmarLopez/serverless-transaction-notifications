@@ -38,29 +38,83 @@ class DynamoAccessor:
         )
         return response
 
-def send_html_email():
+def send_html_email(source, destination, data, total_transactions_by_month):
     ses_client = boto3.client("ses", region_name="us-west-1")
     CHARSET = "UTF-8"
-    HTML_EMAIL_CONTENT = """
-        <html>
-            <head></head>
-            <h1 style='text-align:center'>This is the heading</h1>
-            <p>Hello, world</p>
-            </body>
-        </html>
+    # BODY_HTML += "Shepherd {} is on duty.".format(CHARSET)
+   
+    BODY_HTML = """
+        <table cellspacing="0" cellpadding="0" width="100%" style="margin:0; padding:0; width:100%">
+          <!-- GRADIENT SECTION -->
+          <tr>
+            <td width="100%" style="padding:0; margin:0;">
+              <div style="padding: 5px" style="background-color: #85EBB1; background: linear-gradient(to right bottom,#2cd5c4,#bdffa1);">
+                <img src="https://blog.storicard.com/wp-content/uploads/2019/07/stori.logo-horizontal-03.png" width="160"
+                  height="63" alt="logo-stori">
+              </div>
+              <center>
+        
+                <table cellspacing="0" cellpadding="0" border="0" width="650" style="margin:0; padding:0; width:650px" align="center" class="mobile-full-table">
+                  <tr>
+                    <td>
+                        <h4 style="margin-bottom: 2px">Summary:</h4>
+                        <ul>
     """
+    
+    BODY_HTML += "<li>Total balance: <strong>$ {}</strong>.</li>".format(data.get("total_balance"))
+    BODY_HTML += "<li>Average debit amount: <strong>$ {}</strong>.</li>".format(data.get("average_debit_amount"))
+    BODY_HTML += "<li>Average credit amount: <strong>$ {}</strong>.</li>".format(data.get("average_credit_amount"))
 
+    BODY_HTML += "</ul>"
+    BODY_HTML += "<h5 style=\"margin-bottom: 2px\">Number of transactions by month:</h5>"
+    BODY_HTML += "<ul style=\"list-style-type: none; margin: 5px 0; padding: 0;\">"
+
+
+
+    for k, v in total_transactions_by_month.items():
+        BODY_HTML += "<li>Number of transactions in {} :  <strong>{}</strong></li>".format(k, str(v))
+
+    
+    BODY_HTML += """
+                        </ul>
+                        <!-- MAIN CTA Goes here -->
+                    </td>
+                  </tr>
+                </table>
+              </center>
+            </td>
+          </tr>
+          <!-- GRADIENT SECTION - ENDS-->
+          <tr>
+            <td>
+                <!-- OTHER EMAIL CONTENT -->
+                <center>
+                    <div style="width: 650px; margin-top: 2em;">
+                        <small>
+                            Para dudas o aclaraciones, comunícate al (55) 7822 6649 las 24hrs del día, los 365 días del año o escribe a nuestra área de servicio, 
+                            Stori Contigo al correo 
+                            <a href="mailto:storicontigo@storicard.com" target="_blank">
+                                <span>storicontigo@storicard.com</span>
+                            </a>
+                        </small>
+                    </div>
+                </center>
+            </td>
+          </tr>
+        </table>
+    """
+    
     response = ses_client.send_email(
         Destination={
             "ToAddresses": [
-                "ilmarlopezr@hotmail.com",
+                destination,
             ],
         },
         Message={
             "Body": {
                 "Html": {
                     "Charset": CHARSET,
-                    "Data": HTML_EMAIL_CONTENT,
+                    "Data": BODY_HTML,
                 }
             },
             "Subject": {
@@ -68,7 +122,7 @@ def send_html_email():
                 "Data": "Amazing Email Tutorial",
             },
         },
-        Source="ilmarfranciscol@gmail.com",
+        Source=source,
     )
 
 def lambda_handler(event, context):
@@ -111,12 +165,19 @@ def lambda_handler(event, context):
         print("Average debit amount ", average_debit_amount)
         print("Average credit amount ", average_credit_amount)
 
-        results = total_by_month(dates)
-        for k, v in results.items():
+        total_transactions_by_month = total_by_month(dates)
+        for k, v in total_transactions_by_month.items():
             print("Number of transactions in " + k + ":" + str(v))
 
         # db_element = dynamo_backend.put_transaction()
-        send_html_email()
+        data = {
+            "total_balance": total_balance,
+            "average_debit_amount": average_debit_amount,
+            "average_credit_amount": average_credit_amount
+        }
+
+        print(data)
+        send_html_email("ilmarfranciscol@gmail.com", "ilmarlopezr@hotmail.com", data, total_transactions_by_month)
         return 'Success!'
     except Exception as e:
         print(e)
