@@ -303,6 +303,7 @@ Resources:
                     Action:
                         - ses:SendEmail
                         - ses:SendRawEmail
+                        - cloudwatch:*
                     Resource:
                         - "*"
 

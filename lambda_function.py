@@ -5,7 +5,8 @@ import time
 import uuid
 from datetime import datetime
 import calendar
-import util.email
+from botocore.exceptions import ClientError
+from botocore.vendored import requests
 
 DYNAMO_BD = os.environ['DYNAMO_BD']
 
@@ -36,6 +37,39 @@ class DynamoAccessor:
             }
         )
         return response
+
+def send_html_email():
+    ses_client = boto3.client("ses", region_name="us-west-1")
+    CHARSET = "UTF-8"
+    HTML_EMAIL_CONTENT = """
+        <html>
+            <head></head>
+            <h1 style='text-align:center'>This is the heading</h1>
+            <p>Hello, world</p>
+            </body>
+        </html>
+    """
+
+    response = ses_client.send_email(
+        Destination={
+            "ToAddresses": [
+                "ilmarlopezr@hotmail.com",
+            ],
+        },
+        Message={
+            "Body": {
+                "Html": {
+                    "Charset": CHARSET,
+                    "Data": HTML_EMAIL_CONTENT,
+                }
+            },
+            "Subject": {
+                "Charset": CHARSET,
+                "Data": "Amazing Email Tutorial",
+            },
+        },
+        Source="ilmarfranciscol@gmail.com",
+    )
 
 def lambda_handler(event, context):
     try:
@@ -82,8 +116,9 @@ def lambda_handler(event, context):
             print("Number of transactions in " + k + ":" + str(v))
 
         # db_element = dynamo_backend.put_transaction()
-        
+        send_html_email()
         return 'Success!'
     except Exception as e:
         print(e)
         raise e
+        
