@@ -3,7 +3,6 @@ import os
 from boto3.dynamodb.conditions import Key
 import time
 import uuid
-import json
 
 DYNAMO_BD = os.environ['DYNAMO_BD']
 
@@ -26,35 +25,47 @@ class DynamoAccessor:
         return response
 
 def lambda_handler(event, context):
-    s3 = boto3.client('s3')
-
     # Get the bucket name
     bucket = event['Records'][0]['s3']['bucket']['name']
     # Get the file from s3
     file_key_name = event['Records'][0]['s3']['object']['key']
 
     try:
+        s3 = boto3.client('s3')
+        # dynamo_backend = DynamoAccessor(DYNAMO_BD)
+
         # Fecth the file from S3
         obj = s3.get_object(Bucket=bucket, Key=file_key_name)
+        data = obj['Body'].read().decode('utf-8')
+        
+        print(data)
 
-        rows = obj['Body'].read().split(b'\n')
-        # total_balance = 0.0
+        transactions = data.split("\n")
+
+        total_balance, pos_sum, neg_sum = 0.0, 0.0, 0.0
+        pos_count, neg_count = 0, 0
+        for r in transactions[1:]:
+            r = r.split(",")
+            amount = float(r[2])
+            total_balance += amount
+            if amount >= 0:
+                pos_count += 1
+                pos_sum += amount
+            else:
+                neg_count += 1
+                neg_sum += amount
+
+        average_credit_amount = round(float(pos_sum / pos_count), 2)
+        average_debit_amount = round(float(neg_sum / neg_count), 2)
+
+        print("Total balance ", total_balance)
+        print("Average debit amount ", average_debit_amount)
+        print("Average credit amount ", average_credit_amount)
+        
+        # db_element = dynamo_backend.put_transaction()
+        
         # average_credit_amount = 0.0
         # average_debit_amount = 0.0
-
-        for r in enumerate(rows, start=1):
-            amount = r.decode()['transaction']
-            print(amount)
-            # email_content = email_content + '\n' + r.decode()
-
-        # Parse and print the transactions
-        # transactions = data['transactions']
-        # for record in transactions:
-        #     print(record['id'])
-        #     print(record['date'])
-        #     print(record['transaction'])
-        # dynamo_backend = DynamoAccessor(DYNAMO_BD)
-        # db_element = dynamo_backend.put_transaction(event['transaction'])
         return 'Success!'
     except Exception as e:
         print(e)
