@@ -2,8 +2,6 @@ AWSTemplateFormatVersion : 2010-09-09
 Resources:
   S3TransactionsBucket:
     Type: AWS::S3::Bucket
-    DependsOn:
-      - ProcessingLambdaPermission
     Properties:
       BucketName: storitransactionsbucket
       NotificationConfiguration:
@@ -15,14 +13,7 @@ Resources:
                 Rules:
                 - Name: suffix
                   Value: .csv
-  ProcessingLambdaPermission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      Action: 'lambda:InvokeFunction'
-      FunctionName: !Ref LambdaFunction
-      Principal: s3.amazonaws.com
-      SourceArn: !Sub 'arn:aws:s3:::${BucketName}'
-      SourceAccount: !Ref AWS::AccountId
+
 Outputs:
   S3TransactionsBucket:
     Value: !Ref S3TransactionsBucket
