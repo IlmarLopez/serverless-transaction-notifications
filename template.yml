@@ -21,6 +21,7 @@ Resources:
           - !ImportValue LambdaPolicyEC2
           - !ImportValue LambdaPolicyCW
           - !ImportValue LambdaPolicyS3
+          - !ImportValue LambdaPolicySES
         AssumeRolePolicyDocument:
           Version: 2012-10-17
           Statement:
