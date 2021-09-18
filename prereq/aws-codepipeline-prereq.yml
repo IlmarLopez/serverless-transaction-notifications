@@ -42,6 +42,11 @@ Resources:
               - "kms:CancelKeyDeletion"
             Resource: "*"
 
+  S3StoriTransactionsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: storitransactionsbucket
+
   S3ArtifactsBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -321,6 +326,10 @@ Outputs:
     Value: !GetAtt CodeBuildRole.Arn
     Export:
       Name: CodeBuildRole
+  S3StoriTransactionsBucket:
+    Value: !Ref S3StoriTransactionsBucket
+    Export:
+      Name: S3StoriTransactionsBucket
   S3ArtifactsBucket:
     Value: !Ref S3ArtifactsBucket
     Export:
