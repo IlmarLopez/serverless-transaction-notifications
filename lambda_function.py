@@ -26,16 +26,16 @@ class DynamoAccessor:
         dynamo_db = boto3.resource('dynamodb')
         self.table = dynamo_db.Table(dynamo_table)
 
-    def put_transaction(self, account_statement, txns_list):
+    def put_account_statement(self, statement, txns_list):
         ts = time.time()
         id = uuid.uuid4()
         response = self.table.put_item(
         Item={
                 'id': str(id),
                 'date': str(ts),
-                'totalBalance': str(account_statement.get("total_balance")),
-                'averageDebitAmount': str(account_statement.get("average_debit_amount")),
-                'averageCreditAmount': str(account_statement.get("average_credit_amount")),
+                'totalBalance': str(statement.get("total_balance")),
+                'averageDebitAmount': str(statement.get("average_debit_amount")),
+                'averageCreditAmount': str(statement.get("average_credit_amount")),
                 "transactions": txns_list
             }
         )
@@ -63,6 +63,7 @@ def send_email(source, destination, account_statement, total_transactions_by_mon
                         <ul>
     """
     
+    # Set data from account statement
     BODY_HTML += "<li>Total balance: <strong>$ {}</strong>.</li>".format(account_statement.get("total_balance"))
     BODY_HTML += "<li>Average debit amount: <strong>$ {}</strong>.</li>".format(account_statement.get("average_debit_amount"))
     BODY_HTML += "<li>Average credit amount: <strong>$ {}</strong>.</li>".format(account_statement.get("average_credit_amount"))
@@ -71,12 +72,9 @@ def send_email(source, destination, account_statement, total_transactions_by_mon
     BODY_HTML += "<h5 style=\"margin-bottom: 2px\">Number of transactions by month:</h5>"
     BODY_HTML += "<ul style=\"list-style-type: none; margin: 5px 0; padding: 0;\">"
 
-
-
     for k, v in total_transactions_by_month.items():
         BODY_HTML += "<li>Number of transactions in {} :  <strong>{}</strong></li>".format(k, str(v))
 
-    
     BODY_HTML += """
                         </ul>
                         <!-- MAIN CTA Goes here -->
@@ -106,7 +104,7 @@ def send_email(source, destination, account_statement, total_transactions_by_mon
         </table>
     """
     
-    response = ses_client.send_email(
+    ses_client.send_email(
         Destination={
             "ToAddresses": [
                 destination,
@@ -169,16 +167,15 @@ def lambda_handler(event, context):
         average_credit_amount = round(float(pos_sum / pos_count), 2)
         average_debit_amount = round(float(neg_sum / neg_count), 2)
 
-        total_transactions_by_month = total_by_month(date_list)
-
         account_statement = {
             "total_balance": total_balance,
             "average_debit_amount": average_debit_amount,
             "average_credit_amount": average_credit_amount
         }
         
-        dynamo_backend.put_transaction(account_statement, txns_list)
+        dynamo_backend.put_account_statement(account_statement, txns_list)
 
+        total_transactions_by_month = total_by_month(date_list)
         send_email("ilmarfranciscol@gmail.com", "ilmarlopezr@hotmail.com", account_statement, total_transactions_by_month)
         return 'Success!'
     except Exception as e:
