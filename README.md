@@ -33,4 +33,4 @@ En este momento deplegar el pipeline que tendrá la función de automatizar el d
 2. **Creación manual del Pipeline** Se debe usar CodePipeline para crear el pipeline siguiendo los siguientes pasos:
 
 2.1 Crear el pipeline y seleccionar el role creado en los pre-requisitos.
-![](../media/2.1.png?raw=true)
+![Create pipeline](../media/2.1.png?raw=true)
