@@ -10,7 +10,7 @@ from botocore.vendored import requests
 
 DYNAMO_BD = os.environ['DYNAMO_BD']
 
-# # Process an list of records returning the total records per month - format date "M/DD".
+# Process an list of records returning the total records per month - format date "M/DD".
 def total_by_month(date_list):
     months_with_total = {}
     for date in date_list:
@@ -41,10 +41,9 @@ class DynamoAccessor:
         )
         return response
 
-def send_html_email(source, destination, account_statement, total_transactions_by_month):
+def send_email(source, destination, account_statement, total_transactions_by_month):
     ses_client = boto3.client("ses", region_name="us-west-1")
     CHARSET = "UTF-8"
-    # BODY_HTML += "Shepherd {} is on duty.".format(CHARSET)
    
     BODY_HTML = """
         <table cellspacing="0" cellpadding="0" width="100%" style="margin:0; padding:0; width:100%">
@@ -132,6 +131,7 @@ def lambda_handler(event, context):
     try:
         # Get the bucket name
         bucket = event['Records'][0]['s3']['bucket']['name']
+
         # Get the file from s3
         file_key_name = event['Records'][0]['s3']['object']['key']
 
@@ -169,25 +169,17 @@ def lambda_handler(event, context):
         average_credit_amount = round(float(pos_sum / pos_count), 2)
         average_debit_amount = round(float(neg_sum / neg_count), 2)
 
-        print("Total balance ", total_balance)
-        print("Average debit amount ", average_debit_amount)
-        print("Average credit amount ", average_credit_amount)
-
         total_transactions_by_month = total_by_month(date_list)
-        for k, v in total_transactions_by_month.items():
-            print("Number of transactions in " + k + ":" + str(v))
 
         account_statement = {
             "total_balance": total_balance,
             "average_debit_amount": average_debit_amount,
             "average_credit_amount": average_credit_amount
         }
-        db_element = dynamo_backend.put_transaction(account_statement, txns_list)
+        
+        dynamo_backend.put_transaction(account_statement, txns_list)
 
-        print("txns_list", txns_list)
-
-        print(account_statement)
-        send_html_email("ilmarfranciscol@gmail.com", "ilmarlopezr@hotmail.com", account_statement, total_transactions_by_month)
+        send_email("ilmarfranciscol@gmail.com", "ilmarlopezr@hotmail.com", account_statement, total_transactions_by_month)
         return 'Success!'
     except Exception as e:
         print(e)
