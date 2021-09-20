@@ -66,3 +66,23 @@ En este momento deplegar el pipeline que tendrá la función de automatizar el d
 ![Edit action - execute change set](../media/2.11.png?raw=true)
 
 De ahora en adelante el pipe se ejecutará cuando el repositorio en su rama main reciba un push que disparará el webhook.
+
+### Asignar Lambda función al Bucket S3
+
+3.1 Selecionar el bucket storitransactionsbucket creado en los pre-requisitos anteriormente.
+![Bucket storitransactionsbucket](../media/3.1.png?raw=true)
+
+3.2 Crear evento de notificación en la sección de propiedades del Bucket
+![Bucket storitransactionsbucket](../media/3.2.png?raw=true)
+
+3.3 Seleccionar el tipo evento y la función Lambda.
+![Bucket storitransactionsbucket](../media/3.3.png?raw=true)
+
+3.4 Subur un documento con el siguiente formato de [txns.csv](../src/txns.csv?raw=true) al bucket. Esto va a disparar el llamado de la fucnión Lambda.
+![storitransactionsbucket Upload](../media/3.4.png?raw=true)
+
+3.4 Debe llegar un email con el siguiente formato.
+![email](../media/3.5.png?raw=true)
+
+Y por último revisar la base de datos para verificar que los registros fueron guardados correctamente.
+![email](../media/3.6.png?raw=true)
