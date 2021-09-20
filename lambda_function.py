@@ -119,7 +119,7 @@ def send_email(source, destination, account_statement, total_transactions_by_mon
             },
             "Subject": {
                 "Charset": CHARSET,
-                "Data": "Amazing Email Tutorial",
+                "Data": "Account statement",
             },
         },
         Source=source,
