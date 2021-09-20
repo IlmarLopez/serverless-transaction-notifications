@@ -78,7 +78,7 @@ De ahora en adelante el pipe se ejecutará cuando el repositorio en su rama main
 3.3 Seleccionar el tipo evento y la función Lambda.
 ![Bucket storitransactionsbucket](../media/3.3.png?raw=true)
 
-3.4 Subur un documento con el siguiente formato de [txns.csv](../txns.csv?raw=true) al bucket. Esto va a disparar el llamado de la fucnión Lambda.
+3.4 Subur un documento con el siguiente formato de [txns.csv](../media/txns.csv?raw=true) al bucket. Esto va a disparar el llamado de la fucnión Lambda.
 ![storitransactionsbucket Upload](../media/3.4.png?raw=true)
 
 3.4 Debe llegar un email con el siguiente formato.
