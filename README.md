@@ -84,5 +84,5 @@ De ahora en adelante el pipe se ejecutará cuando el repositorio en su rama main
 3.4 Debe llegar un email con el siguiente formato.
 ![email](../media/3.5.png?raw=true)
 
-Y por último revisar la base de datos para verificar que los registros fueron guardados correctamente.
+Y por último revisar en la table DynamoDB para comprobar la consistencia de los datos.
 ![email](../media/3.6.png?raw=true)
